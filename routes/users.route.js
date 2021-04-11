@@ -23,7 +23,6 @@ router.post('/', [
     check('password', 'The password should has 6 letters').isLength({ min: 6 }),
     check('email', 'The email is invalid').isEmail(),
     check('email').custom( existEmail ),
-    check('rol').custom( isValidRole ),
     validateFields
 ], usersPost);
 
