@@ -24,7 +24,7 @@ const usersGet = async( req, res = response ) => {
 
     console.log("Skip --", skip);
     const [ total, users ] = await Promise.all([
-        User.countDocuments(),
+        User.countDocuments(query),
         User.find(query)
             .skip(skip)
             .limit(Number(limit))
