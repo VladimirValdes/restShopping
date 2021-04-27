@@ -3,6 +3,8 @@
 
 const Role = require('../models/role');
 const User = require('../models/user');
+const Category = require('../models/categories');
+const Product  = require('../models/products');
 
 
 
@@ -34,9 +36,40 @@ const existUserById = async( id ) => {
     }
 }
 
+const existCategory = async( id ) => {
+    const existC = await Category.findById(id);
+    
+    if ( !existC ) {
+        throw new Error(` Category ${ id } doesn't exist in the DB`);
+    }
+}
+
+const existCategoryByName = async( name = "" ) => {
+
+    name = name.toUpperCase();
+
+    const existName = await Category.findOne({ name });
+
+    if ( existName ) {
+        throw new Error(`Category ${ name } already exist`);
+    }
+
+}
+
+const existProduct = async( id ) => {
+    const existP = await Product.findById(id);
+    
+    if ( !existP ) {
+        throw new Error(` Product ${ id } doesn't exist in the DB`);
+    }
+}
+
 
 module.exports = {
     isValidRole,
     existEmail,
-    existUserById
+    existUserById,
+    existCategory,
+    existCategoryByName,
+    existProduct
 }
