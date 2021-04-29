@@ -16,7 +16,7 @@ const getCategoriesByUser = async( req, res = response ) => {
     const categories = await Categories.find({ user: uid, status: true });
 
     res.json({
-        categories: ( categories ) ? [ categories ] : []
+        categories: ( categories ) ?  categories  : []
     });
 }
 
