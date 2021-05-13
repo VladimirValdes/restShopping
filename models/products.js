@@ -22,11 +22,11 @@ const ProductSchema = Schema({
         ref: 'Category',
         required: true
     },
-    user: {
+    users: [{
         type: Schema.Types.ObjectId,
         ref: 'User',
         required: true
-    }
+    }]
 });
 
 ProductSchema.methods.toJSON = function() {

@@ -58,6 +58,7 @@ const productsGetById = async( req, res = response ) => {
 
 const productsPost = async( req, res = response ) => {
 
+    const users = [];
     const { status, name = name.toUpperCase(), description, category } = req.body;
 
     // name 
@@ -65,16 +66,29 @@ const productsPost = async( req, res = response ) => {
     const productDB = await Products.findOne({ name });
 
     if ( productDB ) {
-        res.status(400).json({
+
+        const uid = req.user._id;
+
+        if( productDB.users.includes( uid ))
+         return res.status(400).json({
             msg: `Product ${ name } already exist in DB`
         });
+
+        const product = await Products.findByIdAndUpdate( productDB._id, { $push: { users: uid}}, { new: true });
+
+        return res.status(201).json({
+            product,
+            msg: 'From product Update'
+        });
     }
+
+    users.push(req.user._id);
 
     const data = {
         name, 
         description,
         category,
-        user: req.user._id
+        users
     }
 
 
@@ -83,8 +97,9 @@ const productsPost = async( req, res = response ) => {
     await  product.save();
 
     res.status(201).json({
-        product
-    })
+        product,
+        msg: 'From product post'
+    });
 }
 
 const productsPut = async( req, res = response ) => {

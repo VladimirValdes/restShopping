@@ -36,20 +36,37 @@ const categoriesGet = async( req, res = response) => {
 
 const categoriesPost = async( req, res = response ) => {
 
+    const users = [];
     const name = req.body.name.toUpperCase();
 
     const categoryDB = await Category.findOne({ name });
 
 
     if ( categoryDB ) {
-        res.status(400).json({
-            msg: `Category ${ categoryDB.name } already exist`
+
+        const uid = req.user._id;
+
+        if ( categoryDB.users.includes( uid )) {
+            return res.status(400).json({
+                msg: `Category ${ categoryDB.name } already exist`,
+            });
+        }
+
+
+        const category = await Category.findByIdAndUpdate( categoryDB._id, { $push: {  users: uid }}, { new: true });
+        
+        // Create personal obj for to remove others ids
+        return res.status(201).json({
+           category,
+           msg: 'From update Category'
         });
     }
 
+    users.push(req.user._id);
+
     const data = {
         name,
-        user: req.user._id
+        users
     }
 
     const category = new Category( data );
@@ -59,7 +76,8 @@ const categoriesPost = async( req, res = response ) => {
     await category.save();
 
     res.status(201).json({
-        category
+        category,
+        msg: 'From create Category'
     });
 }
 

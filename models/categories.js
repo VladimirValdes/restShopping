@@ -12,11 +12,11 @@ const CategorySchema = Schema({
         default: true,
         required: true,
     },
-    user: {
+    users: [{
         type: Schema.Types.ObjectId,
         ref: 'User',
         required: true
-    }
+    }]
 });
 
 

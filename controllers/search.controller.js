@@ -13,7 +13,7 @@ const getCategoriesByUser = async( req, res = response ) => {
 
     const uid = req.user._id;
 
-    const categories = await Categories.find({ user: uid, status: true });
+    const categories = await Categories.find({ users: { $eq: uid }, status: true });
 
     res.json({
         categories: ( categories ) ?  categories  : []
@@ -26,7 +26,7 @@ const getPxCByUser = async( req, res = response ) => {
 
     const uid = req.user._id;
 
-    const categories = await Categories.find({ user: uid, status: true });
+    const categories = await Categories.find({ users: { $eq: uid }, status: true });
 
     if ( !categories ) {
         return res.status(400).json({
@@ -38,12 +38,14 @@ const getPxCByUser = async( req, res = response ) => {
 
     for (const category of categories) {
         
-        const products = await Products.find({ user: uid, category: category._id, status: true });
-
+        const products = await Products.find(
+                                    { users: { $eq: uid }, category: category._id, status: true })
 
         if ( products.length > 0 ) {
 
+
             const data = {
+                cid: category._id,
                 category: category.name,
                 products
             }
