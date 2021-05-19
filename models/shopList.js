@@ -51,7 +51,7 @@ const ShoppingListSchema = Schema({
                 required: true
             },
             products: [{
-                pid: {
+                product: {
                     type: Schema.Types.ObjectId,
                     ref: 'Product',
                     required: true

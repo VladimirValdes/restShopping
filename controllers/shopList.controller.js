@@ -1,7 +1,21 @@
 const { response } = require('express');
 const ShopList = require('../models/shopList');
 
+const listProductsGet = async( req, res = response ) => {
 
+     const { id } = req.params;
+     const user = req.user._id; 
+
+     const shopListUser = await ShopList.findById(id)
+                                        .populate('list.category', 'name')
+                                        .populate('list.products.product', 'name');
+
+
+    res.json({ shopListUser })
+
+
+
+}
 
 const listProductsPost = async( req, res = response ) => {
 
@@ -14,13 +28,12 @@ const listProductsPost = async( req, res = response ) => {
 
 
     list.push({ category, products})
-    products.push({ pid: product });
+    products.push({ product });
 
     const shopListU = await ShopList.findOne({ user, 
                                               complete: false,
                                               cancel: false });
 
-    console.log(shopListU);
 
     if ( shopListU ) {
 
@@ -29,13 +42,13 @@ const listProductsPost = async( req, res = response ) => {
 
         if ( existCategory ) {
 
-            const existProduct = existCategory.products.find( p => p.pid == product );
+            const existProduct = existCategory.products.find( p => p.product == product );
 
             if (!existProduct ) {
 
                 const productList = await ShopList.findOneAndUpdate(
                                                   { "list._id": existCategory._id }, 
-                                                  { $push: { "list.$.products": { pid: product } }},
+                                                  { $push: { "list.$.products": { product } }},
                                                   { new: true });
 
                 return res.status(201).json({
@@ -69,6 +82,7 @@ const listProductsPost = async( req, res = response ) => {
 
 
     const data = {
+        name: user,
         user,
         list
     };
@@ -93,8 +107,7 @@ const listProductsPost = async( req, res = response ) => {
 
 
 module.exports =  {
-    // productsGet,
-    // productsGetById,
+    listProductsGet,
     listProductsPost,
     // productsPut,
     // productsDelete

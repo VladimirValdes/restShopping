@@ -19,17 +19,18 @@ const  {
 
 
 const {
-    listProductsPost
+    listProductsPost,
+    listProductsGet
 } = require('../controllers/shopList.controller')
 
 const router = Router();
 
 
-// router.get('/:id', [
-//     check('id', 'Id is not valid').isMongoId(),
-//     check('id').custom( existProduct ),
-//     validateFields
-//  ], );
+router.get('/:id', [
+    validateJWT,
+    check('id', 'Id is not valid').isMongoId(),
+    validateFields
+ ], listProductsGet);
 
 
  router.post('/', [
