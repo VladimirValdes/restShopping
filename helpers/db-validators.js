@@ -5,6 +5,7 @@ const Role = require('../models/role');
 const User = require('../models/user');
 const Category = require('../models/categories');
 const Product  = require('../models/products');
+const ShopList = require('../models/shopList');
 
 
 
@@ -64,6 +65,25 @@ const existProduct = async( id ) => {
     }
 }
 
+const existList = async( id ) => {
+    const existL = await ShopList.findById(id);
+    
+    if ( !existL ) {
+        throw new Error(` List ${ id } doesn't exist in the DB`);
+    }
+}
+
+const existProductList = async( pid ) => {
+
+    const existP = await ShopList.findOne({ "list.products._id": pid });
+
+    if ( !existP ) {
+        
+        throw new Error(` Product ${ id } doesn't exist in the List`);
+        
+    }
+}
+
 
 module.exports = {
     isValidRole,
@@ -71,5 +91,7 @@ module.exports = {
     existUserById,
     existCategory,
     existCategoryByName,
-    existProduct
+    existProduct,
+    existList,
+    existProductList
 }

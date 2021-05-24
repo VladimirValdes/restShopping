@@ -1,21 +1,5 @@
 const { Schema, model } = require('mongoose');
 
-// const ListProductsSchema = Schema({
-      
-//     category: {
-//         type: Schema.Types.ObjectId,
-//         ref: 'Category',
-//         required: true
-//     },
-//     products: [
-//       {
-//         type: Schema.Types.ObjectId,
-//         ref: 'Product',
-//         required: true
-//       }
-//     ],
-// });
-
 const ShoppingListSchema = Schema({
     name: {
         type: String,
@@ -60,21 +44,22 @@ const ShoppingListSchema = Schema({
                     type: Number,
                     default: 1,
                     required: true
+                },
+                purchased: {
+                    type: Boolean,
+                    default: false,
+                    required: true
                 }
             }],
         }]
     });
 
+    ShoppingListSchema.methods.toJSON = function() {
+    const { __v, _id, status, ...data } = this.toObject();
 
-    {
-        
-    }
-// ListProductsSchema.methods.toJSON = function() {
-//     const { __v, _id, ...data } = this.toObject();
+    data.id = _id;
 
-//     data.id = _id;
-
-//     return data;
-// }
+    return data;
+}
 
 module.exports = model('ShoppingList', ShoppingListSchema );

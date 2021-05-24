@@ -13,6 +13,8 @@ const {
 const  {
     existCategory,
     existProduct,
+    existList,
+    existProductList,
     isValidRole
 } = require('../helpers/db-validators');
 
@@ -20,17 +22,28 @@ const  {
 
 const {
     listProductsPost,
-    listProductsGet
+    listProductsGetById,
+    listsProductsGetByUser,
+    listProductsUpdate,
+    listUpdate
+
 } = require('../controllers/shopList.controller')
 
 const router = Router();
 
 
+
+router.get('/user', [
+    validateJWT,
+    validateFields
+], listsProductsGetByUser)
+
 router.get('/:id', [
     validateJWT,
     check('id', 'Id is not valid').isMongoId(),
+    check('id').custom(existList),
     validateFields
- ], listProductsGet);
+ ], listProductsGetById);
 
 
  router.post('/', [
@@ -44,12 +57,24 @@ router.get('/:id', [
     validateFields
 ], listProductsPost );
 
-// router.put('/:id', [
-//     validateJWT,
-//     check('id', 'Id is not valid').isMongoId(),
-//     check('id').custom( existProduct ),
-//     validateFields
-// ], );
+router.put('/:id', [
+    validateJWT,
+    check('id', 'Id is not valid').isMongoId(),
+    check('id').custom(existList),
+    check('pid', 'PID is not valid').isMongoId(),
+    check('pid').custom( existProductList ),
+    validateFields
+], listProductsUpdate);
+
+
+router.put('/list/:id', [
+    validateJWT,
+    check('name', 'Name is required').not().isEmpty(),
+    check('createAt', 'createAt is required').not().isEmpty(),
+    check('id', 'Id is not valid').isMongoId(),
+    check('id').custom(existList),
+    validateFields
+], listUpdate);
 
 // router.delete('/:id', [
 //     validateJWT,

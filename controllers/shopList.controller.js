@@ -1,7 +1,25 @@
 const { response } = require('express');
+const { v4: uuidv4 } = require('uuid');
 const ShopList = require('../models/shopList');
 
-const listProductsGet = async( req, res = response ) => {
+
+const listsProductsGetByUser = async( req, res = response ) => {
+
+    const user = req.user._id; 
+
+    const shopListUser = await ShopList.find({ user, status: true })
+                                       .populate('user', 'name')
+                                       .populate('list.category', 'name')
+                                       .populate('list.products.product', 'name');
+
+
+   res.json({ shopListUser })
+
+
+
+}
+
+const listProductsGetById = async( req, res = response ) => {
 
      const { id } = req.params;
      const user = req.user._id; 
@@ -23,17 +41,19 @@ const listProductsPost = async( req, res = response ) => {
     let list = [];
     const products = [];
     const user = req.user._id; 
-    const { product, category } = req.body;
+    const { product, category, listId } = req.body;
 
 
 
     list.push({ category, products})
     products.push({ product });
 
-    const shopListU = await ShopList.findOne({ user, 
-                                              complete: false,
-                                              cancel: false });
+    const shopListU = await ShopList.findOne({ user , 
+                                              status: true ,
+                                              complete: false, 
+                                              cancel: false })
 
+     console.log(` This is the list:  ${ shopListU }`);
 
     if ( shopListU ) {
 
@@ -82,7 +102,7 @@ const listProductsPost = async( req, res = response ) => {
 
 
     const data = {
-        name: user,
+        name: uuidv4(),
         user,
         list
     };
@@ -103,12 +123,57 @@ const listProductsPost = async( req, res = response ) => {
     
 
 
+const listProductsUpdate = async( req, res = response ) => {
 
+
+        // const user = req.user._id; 
+        const { id } = req.params;
+        // const { name, complete, cancel, createAt, pid, quantity, purchased  } = req.body;
+        const { pid, quantity = 1 } = req.body;
+
+
+            
+        const shopListU = await ShopList.findOneAndUpdate({  _id: id, "list.products._id": pid },
+                                                          { $set: { "list.$.products.$[element].quantity": quantity } },
+                                                          { multi: false,
+                                                            arrayFilters: [{ "element._id": { $eq: pid }}],
+                                                            new: true
+                                                           },
+
+                                                          );
+    
+        res.json({
+            shopListU,
+            msg: 'From product UPDATE'
+        });
+}
+
+const listUpdate = async( req, res = response ) => {
+
+    const { id } = req.params;
+    const { name, createAt, complete = false, cancel = false } = req.body;
+
+    const data = {
+        name,
+        createAt,
+        complete,
+        cancel
+    }
+
+    const list = await ShopList.findByIdAndUpdate(id, data, { new: true });
+
+
+    res.json({
+        list
+    });
+
+}
 
 
 module.exports =  {
-    listProductsGet,
+    listProductsGetById,
     listProductsPost,
-    // productsPut,
-    // productsDelete
+    listsProductsGetByUser,
+    listProductsUpdate,
+    listUpdate
 }
