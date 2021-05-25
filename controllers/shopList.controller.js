@@ -71,8 +71,10 @@ const listProductsPost = async( req, res = response ) => {
                                                   { $push: { "list.$.products": { product } }},
                                                   { new: true });
 
+                console.log('Id de la lista creada',productList.id);
+
                 return res.status(201).json({
-                    productList,
+                    id: productList.id,
                     msg: 'Product added'
                 });
 
@@ -92,7 +94,7 @@ const listProductsPost = async( req, res = response ) => {
                                                     { new: true });
 
              return res.status(201).json({
-                    newItem,
+                    id: newItem.id,
                     msg: 'Product and Category added'
              });
         }
@@ -115,7 +117,7 @@ const listProductsPost = async( req, res = response ) => {
     
       
         res.status(201).json({
-            shopList,
+            id: shopList.id,
             msg: 'From product post'
         });
 
