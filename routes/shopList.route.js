@@ -24,6 +24,7 @@ const {
     listProductsPost,
     listProductsGetById,
     listsProductsGetByUser,
+    listByUser,
     listProductsUpdate,
     listUpdate
 
@@ -38,12 +39,10 @@ router.get('/user', [
     validateFields
 ], listsProductsGetByUser)
 
-router.get('/:id', [
+router.get('/list', [
     validateJWT,
-    check('id', 'Id is not valid').isMongoId(),
-    check('id').custom(existList),
     validateFields
- ], listProductsGetById);
+ ], listByUser);
 
 
  router.post('/', [

@@ -19,17 +19,37 @@ const listsProductsGetByUser = async( req, res = response ) => {
 
 }
 
-const listProductsGetById = async( req, res = response ) => {
+// const listProductsGetById = async( req, res = response ) => {
 
-     const { id } = req.params;
-     const user = req.user._id; 
+//      const { id } = req.params;
+//      const user = req.user._id; 
 
-     const shopListUser = await ShopList.findById(id)
-                                        .populate('list.category', 'name')
-                                        .populate('list.products.product', 'name');
+//      const shopListUser = await ShopList.findById(id)
+//                                         .populate('list.category', 'name')
+//                                         .populate('list.products.product', 'name');
 
 
-    res.json({ shopListUser })
+//     res.json({ shopListUser })
+
+
+
+// }
+
+
+const listByUser = async( req, res = response ) => {
+
+    const user = req.user._id; 
+    const shopListUser = await ShopList.findOne({ user , 
+                                               status: true ,
+                                               complete: false, 
+                                               cancel: false })
+                                            .populate('list.category', 'name')
+                                            .populate('list.products.product', 'name');
+
+   
+
+
+   res.json({ shopListUser })
 
 
 
@@ -173,9 +193,10 @@ const listUpdate = async( req, res = response ) => {
 
 
 module.exports =  {
-    listProductsGetById,
+    // listProductsGetById,
     listProductsPost,
     listsProductsGetByUser,
     listProductsUpdate,
-    listUpdate
+    listUpdate,
+    listByUser
 }
